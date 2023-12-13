@@ -1,0 +1,9 @@
+"0","prov<-group_by(DATA_4,PROVINCIA,NIVEL)"
+"0","prov<-summarise(prov,TOTAL=n())"
+"1","[38;5;255m`summarise()` has grouped output by
+'PROVINCIA'. You can override using the
+`.groups` argument.[39m
+"
+"0","prov<-mutate(prov,PORCENTAJE=paste(round(TOTAL*100/sum(TOTAL),2),"
+"0","                                   ""%"",sep = """"))"
+"0","prov$NIVEL<-factor(prov$NIVEL,levels = c(""BÁSICO"",""MEDIO"",""AVANZADO""))"

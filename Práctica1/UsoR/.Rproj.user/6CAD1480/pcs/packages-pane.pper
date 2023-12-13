@@ -1,0 +1,7 @@
+{
+    "installOptions": {
+        "installFromRepository": true,
+        "libraryPath": "C:/Users/javier.roman/OneDrive - Atekgroup/Documentos/R/R-4.1.2/library",
+        "installDependencies": true
+    }
+}

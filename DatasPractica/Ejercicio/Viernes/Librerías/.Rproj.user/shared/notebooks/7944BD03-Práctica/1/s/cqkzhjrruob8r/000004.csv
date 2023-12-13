@@ -1,0 +1,5 @@
+"0","###VAMOS A URILIZAR LA DATA_3 PARA LOS GRÁFICOS"
+"0","DATA_3<-mutate(DATA_2,"
+"0","               LITERAL=paste(round(LITERAL,2),""%"",sep = """"),"
+"0","               INFERENCIAL=paste(round(INFERENCIAL,2),""%"",sep = """"),"
+"0","               CRITICA=paste(round(CRITICA,2),""%"",sep = """"))"

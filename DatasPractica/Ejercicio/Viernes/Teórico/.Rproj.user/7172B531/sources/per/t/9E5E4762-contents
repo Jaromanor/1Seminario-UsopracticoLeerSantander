@@ -1,0 +1,58 @@
+library(dplyr)
+library(tidyr)
+
+SALARIOS <- data.frame(NOMBRE = c("CARLOS", "LUISA", "ADRIANA"), 
+                     S_2014 = c(100, 400, 200), 
+                     S_2015 = c(500, 600, 700),
+                     S_2016 = c(200, 250, 900) )
+
+
+LARGO<-gather(SALARIOS,AÑO,SALARIO,-1)
+ANCHO<-spread(LARGO,AÑO,SALARIO)
+
+LARGO_1<-separate(LARGO,AÑO,c("sigla","año"),sep = "_")
+LARGO_2<-LARGO_1[,-2]
+
+LARGO_3<-unite(LARGO_1,AÑO,c(2,3),sep = "_")
+
+
+# DPLYR
+
+##Seleccionar     select()
+##Filtrar         filter()
+##Reordenar       arrange()
+##Renombrar       rename()
+##Crear           mutate()
+##Resumir         summarise()
+##Agrupar         group_by()
+
+library(gapminder)
+df <- gapminder
+
+base1<-select(df,c(1,3,4,5,6))
+base2<-select(df,-2)
+
+base3<-filter(df,country=="Spain")
+
+aa <- arrange(df,lifeExp)
+ab <- arrange(df,desc(lifeExp))
+
+ac<-rename(df,LE = lifeExp)
+
+ad<-mutate(df,mult = pop*gdpPercap)
+
+ae<-summarise(df,media = mean(lifeExp))
+
+#Media población por país
+af<-group_by(df,country)
+af<-summarise(af,mean(pop))
+#Observaciones por continente
+ag<-group_by(df,continent)
+ag<-summarise(ag,OBS=n())
+#Cuántos países por continente
+ah<-group_by(df,continent)
+ah<-summarise(ah,Npaises=n_distinct(country))
+
+
+
+

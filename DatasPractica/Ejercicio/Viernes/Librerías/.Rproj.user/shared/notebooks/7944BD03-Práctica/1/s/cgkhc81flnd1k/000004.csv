@@ -1,0 +1,8 @@
+"0","cri<-ggplot(DATA_4,aes(x=CRITICA))+"
+"0","  geom_bar(width = 0.5,color=""black"",fill=""dodgerblue"")+"
+"0","  labs(x=""Preguntas correctas"",y=""Frecuencia"",title = ""Crítica"")+"
+"0","  geom_text(aes(label=..count..), stat='count',  #8"
+"0","            position=position_dodge(), "
+"0","            vjust=-0.2, "
+"0","            size=3"
+"0","  )+scale_x_continuous(breaks=c(0:6))"

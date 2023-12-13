@@ -1,0 +1,8 @@
+"0","##Cargamos base"
+"0","Resultados<-read_xlsx(""Resultados.xlsx"")"
+"0","##Dejamos la variable estrato solamente con el número"
+"0","?separate"
+"0","DATA_1<-separate(data=Resultados,col=ESTRATO,into=c(""ESTRATO"",""ESTRATOS""),"
+"0","                 remove=F,sep="" "")"
+"0","?select"
+"0","DATA_1<-select(DATA_1,-ESTRATO)"

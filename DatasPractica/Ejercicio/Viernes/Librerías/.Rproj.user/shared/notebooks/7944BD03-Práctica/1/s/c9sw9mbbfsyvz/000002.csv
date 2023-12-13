@@ -1,0 +1,12 @@
+"0","##Pasar a Factores"
+"0",""
+"0","DATA_2<-mutate_at(DATA_2,vars(2:12:14,15),as.factor)"
+"2","Warning in x:y :"
+"2","
+ "
+"2"," numerical expression has 11 elements: only the first used
+"
+"0","levels(DATA_2$MUNICIPIO)[levels(DATA_2$MUNICIPIO)==""GAMBITA""]<-""GÁMBITA"""
+"0",""
+"0","DATA_2$PROVINCIA[is.na(DATA_2$PROVINCIA)]<-""COMUNERA"""
+"0","DATA_2$INTERNADO[is.na(DATA_2$INTERNADO)]<-""ND"""

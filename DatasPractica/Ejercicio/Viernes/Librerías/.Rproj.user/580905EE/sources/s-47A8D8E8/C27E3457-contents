@@ -1,0 +1,275 @@
+---
+title: "PrácticaDPLYR-TIDYR"
+author: "JARO"
+date: "2023-07-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Cargamos las librerías que se necesitarán
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(tidyr)
+library(lubridate)
+library(gridExtra)
+```
+
+
+# ADECUACIONES
+
+La base de datos se adecuará para realizar el ejercicio, se pedirá:
+
+1. Dejar la variable ESTRATO únicamente con número.
+2. Agregar la edad del estudiante.
+3. Cambiar los valores "true" y "false" por valores 1 y 0 respectivamente.
+4. Pasar variables a factores
+5. Agregar los resultados de las competencias.
+
+
+```{r}
+##Cargamos base
+Resultados<-read_xlsx("Resultados.xlsx")
+##Dejamos la variable estrato solamente con el número
+?separate
+DATA_1<-separate(data=Resultados,col=ESTRATO,into=c("ESTRATO","ESTRATOS"),
+                 remove=F,sep=" ")
+?select
+DATA_1<-select(DATA_1,-ESTRATO)
+```
+
+
+```{r}
+##Agregamos la edad
+
+DATA_1$FECHA_NACIMIENTO<-as.Date(DATA_1$FECHA_NACIMIENTO)
+
+DATA_1<-mutate(DATA_1,
+               EDAD=floor(time_length(ymd(Sys.Date())-ymd(DATA_1$FECHA_NACIMIENTO)
+                                      ,unit = "year")))
+DATA_1<-select(DATA_1,
+               c(1:12,38,14:37))
+```
+
+```{r}
+##Cambiar los true por 1 y los false por 0
+
+DATA_2<-DATA_1 #Por qué lo hago
+
+DATA_2[DATA_2=="true"]<-"1"
+DATA_2[DATA_2=="false"]<-"0"
+summary(DATA_2)
+
+?mutate
+DATA_2<-mutate_at(DATA_2,vars(18:37),as.numeric)
+summary(DATA_2)
+```
+
+```{r}
+##Pasar a Factores
+
+DATA_2<-mutate_at(DATA_2,vars(2:12:14,15),as.factor)
+
+levels(DATA_2$MUNICIPIO)[levels(DATA_2$MUNICIPIO)=="GAMBITA"]<-"GÁMBITA"
+
+DATA_2$PROVINCIA[is.na(DATA_2$PROVINCIA)]<-"COMUNERA"
+DATA_2$INTERNADO[is.na(DATA_2$INTERNADO)]<-"ND"
+```
+```{r}
+##Agregamos resultados de pruebas LITERAL, INFERENCIAL y CRÍTICA
+
+DATA_2<-mutate(DATA_2,
+               LITERAL=round((P4+P5+P6+P14+P17+P18)*100/6,2),
+               INFERENCIAL=round((P1+P2+P7+P9+P10+P11+P16+P19)*100/8,2),
+               CRITICA=round((P3+P8+P12+P13+P15+P20)*100/6,2))
+```
+
+```{r}
+###VAMOS A URILIZAR LA DATA_3 PARA LOS GRÁFICOS
+DATA_3<-mutate(DATA_2,
+               LITERAL=paste(round(LITERAL,2),"%",sep = ""),
+               INFERENCIAL=paste(round(INFERENCIAL,2),"%",sep = ""),
+               CRITICA=paste(round(CRITICA,2),"%",sep = ""))
+```
+
+
+```{r}
+#Dejamos DATA 4 para otros arreglos
+DATA_4<-mutate(DATA_2,
+               LITERAL=(P4+P5+P6+P14+P17+P18),
+               INFERENCIAL=(P1+P2+P7+P9+P10+P11+P16+P19),
+               CRITICA=round(P3+P8+P12+P13+P15+P20))
+```
+
+
+# USO DE LIBRERÍAS DPLYR Y TIDYR PARA ANÁLISIS DESCRIPTIVOS
+
+En esta etapa vamos a realizar a utilizar las librerías en aplicaciones cotidianas
+dentro del proyecto.
+
+##IDENTIFICAR EL NIVEL DE DESEMPEÑO DE LOS ESTUDIANTES DE SANTANDER
+
+Recuerden que tenemos los microdatos pero queremos evidenciar cómo le fue al 
+departamento en téminos generales en el nivel y eficiencia por competencias.
+
+Esto se evaluó observando:
+- Porcentaje de estudiantes por nivel.
+- Cantidad de estudiantes que respondieron correctamente las preguntas por
+  competencia.
+
+
+```{r}
+niv<-group_by(DATA_3,NIVEL)
+niv<-niv%>%
+  summarise(TOTAL=n())%>%
+  mutate(PORCENTAJE=paste(round((TOTAL*100/sum(TOTAL)),2),"%",sep = ""))
+niv$NIVEL<-factor(niv$NIVEL,
+                  levels = c("AVANZADO","MEDIO","BÁSICO"))
+```
+
+```{r}
+nivel<-ggplot(niv,aes(x=NIVEL,y=TOTAL))+
+  geom_bar(stat = "identity",color="black",fill="dodgerblue",width = 0.9)+
+  labs(x="Nivel de desempeño",y="Total",title = "Total por nivel de desempeño")+
+  geom_text(aes(label=PORCENTAJE),vjust=-2,size=9)
+```
+
+
+```{r}
+lit<-ggplot(DATA_4,aes(x=LITERAL))+
+  geom_bar(width = 0.5,color="black",fill="dodgerblue")+
+  labs(x="Preguntas correctas",y="Frecuencia",title = "Literal")+
+  geom_text(aes(label=..count..), stat='count',  #8
+            position=position_dodge(), 
+            vjust=-0.2, 
+            size=3
+  )+scale_x_continuous(breaks=c(0:6))
+
+```
+
+```{r}
+inf<-ggplot(DATA_4,aes(x=INFERENCIAL))+
+  geom_bar(width = 0.5,color="black",fill="dodgerblue")+
+  labs(x="Preguntas correctas",y="Frecuencia",title = "Inferencial")+
+  geom_text(aes(label=..count..), stat='count',  #8
+            position=position_dodge(), 
+            vjust=-0.2, 
+            size=3
+  )+scale_x_continuous(breaks=c(0:8))
+```
+
+
+```{r}
+cri<-ggplot(DATA_4,aes(x=CRITICA))+
+  geom_bar(width = 0.5,color="black",fill="dodgerblue")+
+  labs(x="Preguntas correctas",y="Frecuencia",title = "Crítica")+
+  geom_text(aes(label=..count..), stat='count',  #8
+            position=position_dodge(), 
+            vjust=-0.2, 
+            size=3
+  )+scale_x_continuous(breaks=c(0:6))
+```
+
+```{r}
+grid.arrange(nivel,lit,inf,cri,ncol=3)
+```
+
+## PORCENTAJE DE EFICIENCIA POR COMPETENCIA EN SANTANDER
+
+En este punto se pide revisar qué tan eficientes fueron los estudiantes en cada una de las competencias evaluadas. Para ello se deberá sumar el total de respuestas correctas dividida por el total de estudiantes.
+
+```{r}
+#Seleccionamos las variables de interés
+compgen<-select(DATA_2,c(38:40))
+```
+
+```{r}
+#Pasamos el objeto compgen a formato largo
+?gather
+compgen<-gather(compgen,COMPETENCIA,TOTAL)
+```
+
+```{r}
+#Creamos nuestra tabla
+compgen<-group_by(compgen,COMPETENCIA)
+compgen1<-summarise(compgen,EFICIENCIA=sum(TOTAL)/length(TOTAL))
+compgen1<-mutate(compgen1,PORCENTAJE=paste(round(EFICIENCIA,2),"%",sep = ""))
+```
+
+```{r}
+#Realizamos el gráfico
+ggplot(compgen1,aes(x=COMPETENCIA,y=EFICIENCIA))+
+  geom_bar(stat="identity",fill="dodgerblue",width = 0.2,color="black")+
+  labs(x="",y="Eficiencia")+
+  geom_text(aes(label=PORCENTAJE),vjust=-0.5,size=3.5)
+```
+
+## NIVEL DE DESEMPEÑO POR PROVINCIA
+
+Ahora se nos pide revisar el porcentaje de estudiantes en cada nivel de desempeño por provincia
+
+```{r}
+prov<-group_by(DATA_4,PROVINCIA,NIVEL)
+prov<-summarise(prov,TOTAL=n())
+prov<-mutate(prov,PORCENTAJE=paste(round(TOTAL*100/sum(TOTAL),2),
+                                   "%",sep = ""))
+prov$NIVEL<-factor(prov$NIVEL,levels = c("BÁSICO","MEDIO","AVANZADO"))
+```
+
+```{r}
+ggplot(prov,aes(x=PROVINCIA,y=TOTAL,fill=NIVEL))+
+  geom_bar(stat = "identity",width = 0.5,color="black")+
+  labs(x="",y="Total")+
+  geom_text(aes(label=PORCENTAJE),
+            vjust=-0.5,size=3.8,position = position_stack())
+```
+
+## EFICICIENCIA POR PROVINCIA
+
+```{r}
+provcomp<-select(DATA_4,c(2,38:40))
+```
+
+```{r}
+provcomp<-gather(provcomp,COMPETENCIA,EFICIENCIA,-1)
+```
+
+```{r}
+provcomp<-mutate_all(provcomp,as.factor)
+summary(provcomp)
+provcomp1<-group_by(provcomp,PROVINCIA,COMPETENCIA,EFICIENCIA)
+provcomp1<-summarise(provcomp1,TOTAL=n())
+```
+
+##Ejemplo Función spread
+
+Vamos a tomar a usar un data frame con formato largo y lo transformamos en formato ancho.
+
+```{r}
+prueba<-select(DATA_4,c(2,38:40))
+COD<-c(1:nrow(DATA_4))
+prueba1<-bind_cols(prueba,COD)
+```
+
+Esta base muestra la cantidad de respuestas correctas por competencia y la provincia a la que pertenece el estudiante.
+
+Está en formato ancho. Ahora vamos a pasarla a formato largo.
+
+```{r}
+prueba_largo<-gather(prueba1,COMPETENCIA,EFICIENCIA,-1,-5)
+```
+
+
+```{r}
+prueba_ancho<-spread(prueba_largo,COMPETENCIA,EFICIENCIA)
+```
+
+
+
+
+

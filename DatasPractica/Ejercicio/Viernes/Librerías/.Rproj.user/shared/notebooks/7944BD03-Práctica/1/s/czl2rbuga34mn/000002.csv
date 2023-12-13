@@ -1,0 +1,4 @@
+"0","nivel<-ggplot(niv,aes(x=NIVEL,y=TOTAL))+"
+"0","  geom_bar(stat = ""identity"",color=""black"",fill=""dodgerblue"",width = 0.9)+"
+"0","  labs(x=""Nivel de desempeño"",y=""Total"",title = ""Total por nivel de desempeño"")+"
+"0","  geom_text(aes(label=PORCENTAJE),vjust=-2,size=9)"

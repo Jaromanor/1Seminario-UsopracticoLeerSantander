@@ -1,0 +1,5 @@
+"0","#Dejamos DATA 4 para otros arreglos"
+"0","DATA_4<-mutate(DATA_2,"
+"0","               LITERAL=(P4+P5+P6+P14+P17+P18),"
+"0","               INFERENCIAL=(P1+P2+P7+P9+P10+P11+P16+P19),"
+"0","               CRITICA=round(P3+P8+P12+P13+P15+P20))"

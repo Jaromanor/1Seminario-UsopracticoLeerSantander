@@ -1,0 +1,6 @@
+"0","niv<-group_by(DATA_3,NIVEL)"
+"0","niv<-niv%>%"
+"0","  summarise(TOTAL=n())%>%"
+"0","  mutate(PORCENTAJE=paste(round((TOTAL*100/sum(TOTAL)),2),""%"",sep = """"))"
+"0","niv$NIVEL<-factor(niv$NIVEL,"
+"0","                  levels = c(""AVANZADO"",""MEDIO"",""BÁSICO""))"

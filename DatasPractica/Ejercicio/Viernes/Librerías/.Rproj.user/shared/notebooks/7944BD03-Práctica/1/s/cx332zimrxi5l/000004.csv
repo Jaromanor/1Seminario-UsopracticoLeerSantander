@@ -1,0 +1,6 @@
+"0","##Agregamos resultados de pruebas LITERAL, INFERENCIAL y CRÍTICA"
+"0",""
+"0","DATA_2<-mutate(DATA_2,"
+"0","               LITERAL=round((P4+P5+P6+P14+P17+P18)*100/6,2),"
+"0","               INFERENCIAL=round((P1+P2+P7+P9+P10+P11+P16+P19)*100/8,2),"
+"0","               CRITICA=round((P3+P8+P12+P13+P15+P20)*100/6,2))"

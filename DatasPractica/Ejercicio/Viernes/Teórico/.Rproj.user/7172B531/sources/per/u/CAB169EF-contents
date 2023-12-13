@@ -1,0 +1,21 @@
+library(ggplot2)
+library(forecast)
+
+# Crear un gráfico de línea de la serie de tiempo
+ggplot(data = serie_tiempo, aes(x = time, y = valor)) +
+  geom_line() +
+  labs(title = "Serie de Tiempo",
+       x = "Fecha",
+       y = "Valor")
+
+# Realizar descomposición STL para separar las componentes
+stl_result <- stl(serie_tiempo, s.window = "periodic")
+
+# Gráfico de las componentes: tendencia, estacionalidad y residuos
+plot(stl_result)
+
+# Prueba de estacionalidad con el test de estacionalidad de McLeod-Li
+mcleod.li.test(serie_tiempo)
+
+# Prueba de estacionalidad con el test de estacionalidad de OCSB (Owen, Cao, Singpurwalla, and Bandyopadhyay)
+ocsb.test(serie_tiempo)

@@ -1,0 +1,11 @@
+library(tidyr)
+
+# Datos desordenados
+ventas <- data.frame(Producto = c("A", "B", "C"),
+                     Enero = c(10, 20, 15),
+                     Febrero = c(12, 18, 20),
+                     Marzo = c(8, 10, 12))
+
+# Transformación a datos ordenados
+?gather
+ventas_ordenadas <- gather(ventas, Mes, Cantidad, -Producto)
